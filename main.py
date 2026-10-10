@@ -10,39 +10,40 @@ DEFAULT_FILENAME = "words.txt"
 DEFAULT_DUPLICATES = False
 DEFAULT_ASCENDING = True                                # NUEVA
 
-
+#función para retornar lista ordenada
 def sort_list(items, ascending=True):
     if not isinstance(items, list):
         raise RuntimeError(f"Cannot sort {type(items)}")
 
     return sorted(items, reverse=(not ascending))
 
-
+#función para retornar lista de items ingresados por parametro
 def remove_duplicates_from_list(items):
-    return list(set(items))
+    return list(dict.fromkeys(items))
 
-
+#implementación, condición de validación ...
 if __name__ == "__main__":
     filename = DEFAULT_FILENAME
     remove_duplicates = DEFAULT_DUPLICATES
     ascending = DEFAULT_ASCENDING                       # NUEVA
-    if len(sys.argv) >= 3:                              # CAMBIA: == 3 -> >= 3
+
+    if len(sys.argv) == 2:
         filename = sys.argv[1]
-        remove_duplicates = sys.argv[2].lower() == "yes"
+    elif len(sys.argv) >= 3:                            # CAMBIA: == 3 -> >= 3
+        filename = sys.argv[1]
+        remove_duplicates = sys.argv[2].strip().lower() in {"yes", "y", "true", "1"}
         if len(sys.argv) >= 4:                          # NUEVA
             ascending = sys.argv[3].lower() != "desc"   # NUEVA
-    else:
-        print("The file must be provided as the first argument")
-        print("The second argument indicates whether duplicates should be removed")
-        sys.exit(1)
 
     print(f"The words will be read from file {filename}")
     file_path = os.path.join(".", filename)
     if os.path.isfile(file_path):
         word_list = []
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             for line in file:
-                word_list.append(line.strip())
+                for word in line.strip().split():
+                    if word:
+                        word_list.append(word)
     else:
         print(f"The file {filename} does not exist")
         word_list = ["ravenclaw", "gryffindor", "slytherin", "hufflepuff"]
